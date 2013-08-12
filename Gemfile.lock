@@ -59,7 +59,7 @@ GEM
       multi_xml (~> 0.5)
       rack (~> 1.2)
     rack (1.5.2)
-    rake (10.1.0)
+    rake (10.0.4)
     rdoc (4.0.1)
       json (~> 1.4)
     statistics2 (0.54)
@@ -74,6 +74,6 @@ PLATFORMS
 
 DEPENDENCIES
   activerecord (>= 4.0.0)
-  bundler
-  jeweler (>= 1.8.4)
+  jeweler (>= 1.8.6)
+  rake (~> 10.0.4)
   wilson_interval (~> 0.1.0)

@@ -21,17 +21,6 @@ Jeweler::Tasks.new do |gem|
   gem.description = %Q{This gem provides a framework to run automated multi-armed bandit testing in Rails.}
   gem.email = "magnus@vonkoeller.de"
   gem.authors = ["Magnus von Koeller"]
-  gem.require 'felon/counter'
   # dependencies defined in Gemfile
 end
 Jeweler::RubygemsDotOrgTasks.new
-
-require 'rdoc/task'
-Rake::RDocTask.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
-
-  rdoc.rdoc_dir = 'rdoc'
-  rdoc.title = "felon #{version}"
-  rdoc.rdoc_files.include('README*')
-  rdoc.rdoc_files.include('lib/**/*.rb')
-end

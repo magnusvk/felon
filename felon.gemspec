@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "felon"
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Magnus von Koeller"]
-  s.date = "2013-08-02"
+  s.date = "2013-08-06"
   s.description = "This gem provides a framework to run automated multi-armed bandit testing in Rails."
   s.email = "magnus@vonkoeller.de"
   s.extra_rdoc_files = [
@@ -18,12 +18,21 @@ Gem::Specification.new do |s|
   ]
   s.files = [
     ".document",
+    ".ruby-gemset",
+    ".ruby-version",
     "Gemfile",
+    "Gemfile.lock",
     "LICENSE.txt",
     "README.rdoc",
     "Rakefile",
     "VERSION",
+    "felon.gemspec",
     "lib/felon.rb",
+    "lib/felon/counter.rb",
+    "lib/felon/experiment.rb",
+    "lib/felon/variant.rb",
+    "lib/generators/felon/install_generator.rb",
+    "lib/generators/felon/templates/felon_install.rb",
     "test/helper.rb",
     "test/test_felon.rb"
   ]
@@ -37,18 +46,21 @@ Gem::Specification.new do |s|
     s.specification_version = 4
 
     if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_runtime_dependency(%q<activerecord>, [">= 0"])
-      s.add_development_dependency(%q<bundler>, [">= 0"])
-      s.add_development_dependency(%q<jeweler>, [">= 1.8.4"])
+      s.add_runtime_dependency(%q<activerecord>, [">= 4.0.0"])
+      s.add_runtime_dependency(%q<wilson_interval>, ["~> 0.1.0"])
+      s.add_development_dependency(%q<jeweler>, [">= 1.8.6"])
+      s.add_development_dependency(%q<rake>, ["~> 10.0.4"])
     else
-      s.add_dependency(%q<activerecord>, [">= 0"])
-      s.add_dependency(%q<bundler>, [">= 0"])
-      s.add_dependency(%q<jeweler>, [">= 1.8.4"])
+      s.add_dependency(%q<activerecord>, [">= 4.0.0"])
+      s.add_dependency(%q<wilson_interval>, ["~> 0.1.0"])
+      s.add_dependency(%q<jeweler>, [">= 1.8.6"])
+      s.add_dependency(%q<rake>, ["~> 10.0.4"])
     end
   else
-    s.add_dependency(%q<activerecord>, [">= 0"])
-    s.add_dependency(%q<bundler>, [">= 0"])
-    s.add_dependency(%q<jeweler>, [">= 1.8.4"])
+    s.add_dependency(%q<activerecord>, [">= 4.0.0"])
+    s.add_dependency(%q<wilson_interval>, ["~> 0.1.0"])
+    s.add_dependency(%q<jeweler>, [">= 1.8.6"])
+    s.add_dependency(%q<rake>, ["~> 10.0.4"])
   end
 end
 

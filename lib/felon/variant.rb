@@ -1,3 +1,5 @@
+require 'wilson_interval'
+
 class Felon::Variant < ActiveRecord::Base
 
   belongs_to :experiment
@@ -11,7 +13,29 @@ class Felon::Variant < ActiveRecord::Base
   end
 
   def optimistic_conversion
-    Wilson::Interval.new(successes: conversions, total: views, confidence: 0.95).upper_bound
+    if views == 0
+      # make sure that we start showing this when we have absolutely no data at all
+      1
+    else
+      conversion_upper_bound
+    end
+  end
+
+  def conversion_upper_bound(confidence = 0.95)
+    Wilson::Interval.new(successes: conversions, total: views, confidence: confidence).upper_bound
+  end
+  
+  def conversion_lower_bound(confidence = 0.95)
+    Wilson::Interval.new(successes: conversions, total: views, confidence: confidence).lower_bound
+  end
+  
+  def weight
+    sum_all = experiment.variants.map(&:optimistic_conversion).sum
+    if sum_all == 0
+      1.0 / experiment.variants.count
+    else
+      optimistic_conversion.to_f / sum_all
+    end
   end
 
   def ucb1_interval

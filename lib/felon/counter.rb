@@ -15,9 +15,8 @@ class Felon::Counter
   
   def self.flush
     Rails.logger.debug "[Felon] Flushing counts to database..."
-    Rails.logger.debug @@updates.inspect
 
-    views = conversion = {}
+    views = conversions = {}
     @@semaphore.synchronize do
       # make sure we kick off another synchronization thread at the next
       # recorded view / conversion
@@ -31,10 +30,10 @@ class Felon::Counter
 
       conversions = @@updates[:conversions]
       @@updates[:conversions] = {}
+    end
 
-      (views.keys | conversions.keys).each do |variant_id|
-        Felon::Variant.update_counters variant_id, views: views[variant_id].to_i, conversions: conversions[variant_id].to_i
-      end
+    (views.keys | conversions.keys).each do |variant_id|
+      Felon::Variant.update_counters variant_id, views: views[variant_id].to_i, conversions: conversions[variant_id].to_i
     end
   end
 
@@ -43,7 +42,13 @@ class Felon::Counter
     @@thread ||= Thread.new do
       # only write to the database once every ten seconds
       sleep FLUSH_INTERVAL
+
+      # ready, set, go
       flush
+
+      # every thread has its own database connection; we need to close it
+      # to avoid problems
+      ActiveRecord::Base.connection.close
     end
   end
 
