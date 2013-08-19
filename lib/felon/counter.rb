@@ -9,6 +9,10 @@ class Felon::Counter
     increment(:views, variant_id)
   end
   
+  def self.record_interaction(variant_id)
+    increment(:interaction, variant_id)
+  end
+  
   def self.record_conversion(variant_id)
     increment(:conversions, variant_id)
   end
@@ -33,7 +37,7 @@ class Felon::Counter
     end
 
     (views.keys | conversions.keys).each do |variant_id|
-      Felon::Variant.update_counters variant_id, views: views[variant_id].to_i, conversions: conversions[variant_id].to_i
+      Felon::Variant.update_counters variant_id, views: views[variant_id].to_i, conversions: conversions[variant_id].to_i, interactions: conversions[variant_id].to_i
     end
   end
 

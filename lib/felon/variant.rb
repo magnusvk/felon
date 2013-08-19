@@ -12,6 +12,14 @@ class Felon::Variant < ActiveRecord::Base
     end
   end
 
+  def interaction_rate
+    if views == 0
+      0
+    else
+      interactions.to_f / views
+    end
+  end
+
   def optimistic_conversion
     if views == 0
       # make sure that we start showing this when we have absolutely no data at all
@@ -27,6 +35,14 @@ class Felon::Variant < ActiveRecord::Base
   
   def conversion_lower_bound(confidence = 0.95)
     Wilson::Interval.new(successes: conversions, total: views, confidence: confidence).lower_bound
+  end
+  
+  def interaction_rate_upper_bound(confidence = 0.95)
+    Wilson::Interval.new(successes: interactions, total: views, confidence: confidence).upper_bound
+  end
+  
+  def interaction_rate_lower_bound(confidence = 0.95)
+    Wilson::Interval.new(successes: interactions, total: views, confidence: confidence).lower_bound
   end
   
   def weight
