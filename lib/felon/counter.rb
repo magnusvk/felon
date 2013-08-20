@@ -2,7 +2,7 @@ class Felon::Counter
 
   FLUSH_INTERVAL = 2
 
-  @@updates = { views: {}, conversions: {} }
+  @@updates = { views: {}, conversions: {}, interactions: {} }
   @@semaphore = Mutex.new
   
   def self.record_view(variant_id)
@@ -10,7 +10,7 @@ class Felon::Counter
   end
   
   def self.record_interaction(variant_id)
-    increment(:interaction, variant_id)
+    increment(:interactions, variant_id)
   end
   
   def self.record_conversion(variant_id)
@@ -20,7 +20,7 @@ class Felon::Counter
   def self.flush
     Rails.logger.debug "[Felon] Flushing counts to database..."
 
-    views = conversions = {}
+    views = interactions = conversions = {}
     @@semaphore.synchronize do
       # make sure we kick off another synchronization thread at the next
       # recorded view / conversion
@@ -32,27 +32,35 @@ class Felon::Counter
       views = @@updates[:views]
       @@updates[:views] = {}
 
+      interactions = @@updates[:interactions]
+      @@updates[:interactions] = {}
+
       conversions = @@updates[:conversions]
       @@updates[:conversions] = {}
     end
 
-    (views.keys | conversions.keys).each do |variant_id|
-      Felon::Variant.update_counters variant_id, views: views[variant_id].to_i, conversions: conversions[variant_id].to_i, interactions: conversions[variant_id].to_i
+    (views.keys | interactions.keys | conversions.keys).each do |variant_id|
+      Felon::Variant.update_counters variant_id, views: views[variant_id].to_i, interactions: interactions[variant_id].to_i, conversions: conversions[variant_id].to_i
     end
   end
 
   private
   def self.start_flush_thread
     @@thread ||= Thread.new do
-      # only write to the database once every ten seconds
-      sleep FLUSH_INTERVAL
+      begin
+        # only write to the database once every ten seconds
+        sleep FLUSH_INTERVAL
 
-      # ready, set, go
-      flush
+        # ready, set, go
+        flush
 
-      # every thread has its own database connection; we need to close it
-      # to avoid problems
-      ActiveRecord::Base.connection.close
+        # every thread has its own database connection; we need to close it
+        # to avoid problems
+        ActiveRecord::Base.connection.close
+      rescue => e
+        Rails.logger.error "Felon update thred error: #{e.inspect}"
+        Rails.logger.error e.backtrace.join("\n")
+      end
     end
   end
 

@@ -5,7 +5,7 @@ class Felon::TrackController < ActionController::Base
   end
 
   def interaction
-    Felon::Counter.record_conversion(params[:variant_id])
+    Felon::Counter.record_interaction(params[:variant_id])
     send_blank_response
   end
 
