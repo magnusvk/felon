@@ -1,4 +1,7 @@
 class Felon::TrackController < ApplicationController
+
+  before_filter :set_cache_buster
+
   def view
     Felon::Counter.record_view(params[:variant_id]) if track?
     send_blank_response
@@ -35,5 +38,12 @@ class Felon::TrackController < ApplicationController
     else
       true
     end
+  end
+
+  private
+  def set_cache_buster
+    response.headers["Cache-Control"] = "no-cache, no-store, max-age=0, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "Fri, 01 Jan 1990 00:00:00 GMT"
   end
 end
